@@ -1,4 +1,5 @@
-FROM python:3.8-slim-buster
+ARG ARCH=
+FROM ${ARCH}/python:3.8-slim-buster
 
 MAINTAINER Maciej Grela <enki@fsck.pl>
 
