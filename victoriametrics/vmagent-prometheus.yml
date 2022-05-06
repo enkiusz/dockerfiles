@@ -1,0 +1,24 @@
+global:
+  scrape_interval:     1s
+
+scrape_configs:
+  - job_name: 'victoriametrics'
+    static_configs:
+      - targets: 
+        - vmagent:8429
+        - vmalert:8880
+        - vminsert:8480
+        - vmselect:8481
+        - vmstorage-1:8482
+        - vmstorage-2:8482
+        - vmstorage-3:8482
+    metric_relabel_configs:
+      - action: drop_metrics
+        regex:
+          - flag
+          - 'go_.+'
+          - '.+_bucket$'
+          - '.*promscrape_.+'
+          - 'vm_log_messages_.+'
+          - 'vm_per_query_.+'
+          - '.+_request_duration_.+'
