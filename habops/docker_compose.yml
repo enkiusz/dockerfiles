@@ -27,6 +27,7 @@ services:
       BROKER_URL: mqtt://mqtt
     networks:
       - mqtt
+      - bridge
     depends_on:
       - mosquitto
 
@@ -37,3 +38,5 @@ configs:
 networks:
   mqtt:
     internal: true
+  bridge:
+    external: true
