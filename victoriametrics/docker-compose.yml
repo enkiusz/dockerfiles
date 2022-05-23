@@ -96,6 +96,7 @@ services:
     networks:
       - vminsert
       - vmselect
+      - bridge
     volumes:
       - vmagentdata:/vmagentdata
     configs:
@@ -144,6 +145,8 @@ services:
     image: grafana/grafana
     depends_on:
       - vmselect
+    networks:
+      - vmselect
     ports:
       - 3000:3000
     volumes:
@@ -157,6 +160,10 @@ services:
         target: /var/lib/grafana/dashboards/vmagent.json
       - source: grafana_vmalert_dashboard
         target: /var/lib/grafana/dashboards/vmalert.json
+    deploy:
+      placement:
+        constraints:
+          - node.Hostname==boxer
     restart: always
 
 configs:
@@ -185,3 +192,6 @@ networks:
     internal: true
   vmselect:
     internal: true
+  bridge:
+    external: true
+
