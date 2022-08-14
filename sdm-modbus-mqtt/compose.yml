@@ -1,0 +1,14 @@
+---
+version: '3.5'
+
+services:
+  sdm-modbus-mqtt:
+    image: enkiusz/sdm-modbus-mqtt
+    container_name: sdm-modbus-mqtt
+    network_mode: bridge
+    devices:
+      - "${MODBUS_RTU_DEVICE}"
+    environment:
+      PYSERIAL_DEVICE: SER=010C4825
+      BROKER_URL: mqtt://mqtt
+
