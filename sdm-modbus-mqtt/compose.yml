@@ -6,8 +6,14 @@ services:
     image: enkiusz/sdm-modbus-mqtt
     container_name: sdm-modbus-mqtt
     network_mode: bridge
+
+    # Share all serial ports with the container and let pyserial figure out
+    # what is what based on the serial number
     devices:
-      - "${MODBUS_RTU_DEVICE}"
+      - /dev/ttyUSB0
+      - /dev/ttyUSB1
+      - /dev/ttyACM0
+
     environment:
       PYSERIAL_DEVICE: SER=010C4825
       BROKER_URL: mqtt://mqtt
