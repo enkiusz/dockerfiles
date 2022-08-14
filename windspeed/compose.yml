@@ -1,0 +1,21 @@
+---
+version: '3.5'
+
+services:
+  windspeed-sensor:
+    image: enkiusz/windspeed-sensor
+    container_name: windspeed-sensor
+    network_mode: bridge
+
+    # Share all serial ports with the container and let pyserial figure out
+    # what is what based on the serial number
+    devices:
+      - /dev/ttyUSB0
+      - /dev/ttyUSB1
+      - /dev/ttyACM0
+
+    environment:
+      PYSERIAL_DEVICE: SER=A9007UcE
+      BROKER_URL: mqtt://mqtt
+      F: "0.34"
+
