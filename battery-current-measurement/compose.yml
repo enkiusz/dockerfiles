@@ -1,0 +1,19 @@
+---
+version: '3.5'
+
+services:
+  battery-current:
+    image: enkiusz/senml-publish
+    container_name: battery-current
+    network_mode: bridge
+
+    # Share all serial ports with the container and let pyserial figure out
+    # what is what based on the serial number
+    devices:
+      - /dev/ttyUSB0
+      - /dev/ttyACM0
+
+    environment:
+      PYSERIAL_DEVICE: SER=855313038303513112A1
+      BROKER_URL: mqtt://mqtt
+      TOPIC: battery/
