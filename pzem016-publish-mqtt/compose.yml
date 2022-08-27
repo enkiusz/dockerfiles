@@ -1,0 +1,19 @@
+---
+version: '3.5'
+
+services:
+  pzem016-publish-mqtt:
+    image: enkiusz/pzem016-publish-mqtt
+    container_name: pzem016-publish-mqtt
+    network_mode: bridge
+
+    # Share all serial ports with the container and let pyserial figure out
+    # what is what based on the serial number
+    devices:
+      - /dev/ttyUSB0
+      - /dev/ttyACM0
+
+    environment:
+      PYSERIAL_DEVICE: VID:PID=1A86:7523
+      BROKER_URL: mqtt://mqtt
+
