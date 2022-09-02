@@ -1,0 +1,19 @@
+---
+version: '3.5'
+
+services:
+  state-actuator:
+    image: enkiusz/state-actuator
+    container_name: state-actuator
+    network_mode: bridge
+
+    # This container requires access to /dev/bus/usb
+    privileged: true
+    volumes:
+      - type: bind
+        source: /dev/bus/usb
+        target: /dev/bus/usb
+
+    environment:
+      BROKER_URL: mqtt://mqtt
+
