@@ -1,0 +1,12 @@
+---
+version: '3.5'
+
+services:
+  enecsys-gateway:
+    image: enkiusz/enecsys-gateway
+    container_name: enecsys-gateway
+    network_mode: bridge
+
+    environment:
+      GATEWAY_URL: http://10.10.10.57/ajax.xml
+      BROKER_URL: mqtt://mqtt
