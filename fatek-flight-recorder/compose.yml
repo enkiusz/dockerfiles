@@ -1,0 +1,17 @@
+---
+version: '3.5'
+
+services:
+  fatek-flight-recorder:
+    image: enkiusz/fatek-flight-recorder
+    container_name: fatek-flight-recorder
+    network_mode: bridge
+
+    devices:
+      - /dev/ttyUSB0
+      - /dev/ttyUSB1
+      - /dev/ttyACM0
+
+    environment:
+      BROKER_URL: mqtt://mqtt
+      PYSERIAL_DEVICE: FSF
