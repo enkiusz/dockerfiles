@@ -3,7 +3,7 @@ FROM alpine
 MAINTAINER Maciej Grela enki@fsck.pl
 
 RUN apk add py3-pip
-RUN apk add libusb
+RUN pip3 install pyserial
 RUN pip3 install structlog paho-mqtt
 
 RUN wget -O /fatek-flight-recorder.py https://raw.githubusercontent.com/mgrela/tools/master/bin/fatek-flight-recorder.py
