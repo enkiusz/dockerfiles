@@ -102,6 +102,10 @@ services:
     configs:
       - source: vmagent_prometheus
         target: /etc/prometheus/prometheus.yml
+      - source: victoriametrics_scrape_config
+        target: /etc/prometheus.d/victoriametrics.yml
+      - source: infra_scrape_config
+        target: /etc/prometheus.d/infra.yml
     command:
       - '--promscrape.config=/etc/prometheus/prometheus.yml'
       - '--remoteWrite.url=http://vminsert:8480/insert/0/prometheus/'
@@ -168,7 +172,11 @@ services:
 
 configs:
   vmagent_prometheus:
-    file: ./vmagent-prometheus.yml  
+    file: ./vmagent-prometheus.yml
+  victoriametrics_scrape_config:
+    file: ./victoriametrics_scrape_config.yml
+  infra_scrape_config:
+    external: true
   grafana_datasources:
     file: ./grafana/datasource.yml
   grafana_vm_dashboard:
