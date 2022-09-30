@@ -9,9 +9,9 @@ RUN pip3 install structlog git+https://github.com/mgrela/paho.mqtt.python.git py
 
 RUN wget -O /state-actuator.py https://raw.githubusercontent.com/mgrela/tools/master/bin/state-actuator.py
 
-ARG pyserial_device
+ARG pyftdi_url
 ARG broker_url
-ENV PYSERIAL_DEVICE=$pyserial_device
+ENV PYFTDI_URL=$pyftdi_url
 ENV BROKER_URL=$broker_url
 
-ENTRYPOINT python3 /state-actuator.py --mqtt-broker $BROKER_URL
+ENTRYPOINT python3 /state-actuator.py --url $PYFTDI_URL -mqtt-broker $BROKER_URL
