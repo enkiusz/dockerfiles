@@ -14,4 +14,4 @@ ARG broker_url
 ENV PYFTDI_URL=$pyftdi_url
 ENV BROKER_URL=$broker_url
 
-ENTRYPOINT python3 /state-actuator.py --url $PYFTDI_URL -mqtt-broker $BROKER_URL
+ENTRYPOINT python3 /state-actuator.py --url $PYFTDI_URL --mqtt-broker $BROKER_URL
