@@ -1,0 +1,38 @@
+---
+version: '3.8'
+
+services:
+  roach:
+    image: cockroachdb/cockroach
+    volumes:
+      - data:/storage
+    command:
+      - '--insecure'
+      - '--storageDataPath=/storage'
+      - '--retentionPeriod=9999y'
+    networks:
+      - roachnet
+    ports:
+      - target: 26257
+        published: 26257
+        protocol: tcp
+        mode: host
+      - target: 8080
+        published: 8089
+        protocol: tcp
+        mode: host
+    deploy:
+      replicas: 3
+      placement:
+        max_replicas_per_node: 1
+        constraints:
+          - node.labels.deploy_cockroachdb==true
+    restart: always
+
+volumes:
+  data:
+
+networks:
+  roachnet:
+    internal: true
+
