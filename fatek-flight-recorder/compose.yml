@@ -15,4 +15,4 @@ services:
 
     environment:
       BROKER_URL: mqtt://mqtt
-      PYSERIAL_DEVICE: SER=FTGS6NLO
+      PYSERIAL_DEVICE: hwgrep://SER=FTGS6NLO

@@ -15,6 +15,6 @@ services:
         target: /dev/bus/usb
 
     environment:
-      PYFTDI_URL: ftdi://ftdi:232:4/1
+      PYFTDI_URL: ftdi://ftdi:232:FTGS6NLO/1
       BROKER_URL: mqtt://mqtt
 
