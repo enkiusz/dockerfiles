@@ -5,7 +5,7 @@ MAINTAINER Maciej Grela enki@fsck.pl
 RUN apk add py3-pip
 RUN apk add libusb
 RUN apk add git
-RUN pip3 install structlog git+https://github.com/mgrela/paho.mqtt.python.git pyftdi
+RUN pip3 install structlog git+https://github.com/mgrela/paho.mqtt.python.git git+https://github.com/enkiusz/pyftdi.git
 
 RUN wget -O /state-actuator.py https://raw.githubusercontent.com/mgrela/tools/master/bin/state-actuator.py
 
