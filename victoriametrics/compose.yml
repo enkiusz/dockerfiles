@@ -51,17 +51,34 @@ services:
           - node.Hostname==k0node1
     restart: always
 
+  vmstorage-noether:
+    image: victoriametrics/vmstorage
+    volumes:
+      - strgdata:/storage
+    command:
+      - '--storageDataPath=/storage'
+      - '--retentionPeriod=9999y'
+    networks:
+      - vminsert
+    deploy:
+      placement:
+        constraints:
+          - node.Hostname==noether
+    restart: always
+
   vminsert:
     image: victoriametrics/vminsert
     depends_on:
       - vmstorage-1
       - vmstorage-2
       - vmstorage-3
+      - vmstorage-noether
     command:
       - '--replicationFactor=2'
       - '--storageNode=vmstorage-1:8400'
       - '--storageNode=vmstorage-2:8400'
       - '--storageNode=vmstorage-3:8400'
+      - '--storageNode=vmstorage-noether:8400'
       - '-influxSkipSingleField'
     networks:
       - vminsert
@@ -80,6 +97,7 @@ services:
       - '--storageNode=vmstorage-1:8401'
       - '--storageNode=vmstorage-2:8401'
       - '--storageNode=vmstorage-3:8401'
+      - '--storageNode=vmstorage-noether:8401'
       - '-dedup.minScrapeInterval=1ms'
     networks:
       - vminsert
@@ -106,6 +124,8 @@ services:
         target: /etc/prometheus.d/victoriametrics.yml
       - source: infra_scrape_config
         target: /etc/prometheus.d/infra.yml
+    ports:
+      - 8429:8429
     command:
       - '--promscrape.config=/etc/prometheus/prometheus.yml'
       - '--remoteWrite.url=http://vminsert:8480/insert/0/prometheus/'
@@ -172,22 +192,30 @@ services:
 
 configs:
   vmagent_prometheus:
+    name: vmagent_prometheus-${EPOCH}
     file: ./vmagent-prometheus.yml
   victoriametrics_scrape_config:
+    name: victoriametrics_scrape_config-${EPOCH}
     file: ./victoriametrics_scrape_config.yml
   infra_scrape_config:
     external: true
   grafana_datasources:
+    name: grafana_datasources-${EPOCH}
     file: ./grafana/datasource.yml
   grafana_vm_dashboard:
+    name: grafana_vm_dashboard-${EPOCH}
     file: dashboards/victoriametrics.json
   grafana_vmagent_dashboard:
+    name: grafana_vmagent_dashboard-${EPOCH}
     file: dashboards/vmagent.json
   grafana_vmalert_dashboard:
+    name: grafana_vmalert_dashboard-${EPOCH}
     file: dashboards/vmalert.json
   vmalert_alerts:
+    name: vmalert_alerts-${EPOCH}
     file: alerts.yml
   alertmanager:
+    name: alertmanager-${EPOCH}
     file: alertmanager.yml
 
 volumes:

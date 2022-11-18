@@ -8,6 +8,7 @@
         - vmstorage-1:8482
         - vmstorage-2:8482
         - vmstorage-3:8482
+        - vmstorage-noether:8482
     metric_relabel_configs:
       - action: drop_metrics
         regex:
