@@ -2,37 +2,154 @@
 version: '3.8'
 
 services:
-  roach:
+  roach-noether:
     image: cockroachdb/cockroach
     volumes:
       - data:/storage
     command:
-      - '--insecure'
-      - '--storageDataPath=/storage'
-      - '--retentionPeriod=9999y'
+      - 'start'
+      - '--listen-addr=:26257'
+      - '--advertise-addr=noether.shill.gq'
+      - '--certs-dir=/run/secrets'
+      - '--store=/storage'
+      - '--join=boxer.shill.gq'
+      - '--join=k0node1.shill.gq'
+      - '--external-io-disable-http'
+      - '--external-io-disable-implicit-credentials'
+    secrets:
+      - source: cockroach_noether.shill.gq_cert
+        target: node.crt
+        mode: 0400
+      - source: cockroach_noether.shill.gq_key
+        target: node.key
+        mode: 0400
+      - source: cockroachdb_ca_cert
+        target: ca.crt
+        mode: 0444
     networks:
-      - roachnet
+      - bridge
     ports:
       - target: 26257
         published: 26257
         protocol: tcp
         mode: host
       - target: 8080
-        published: 8089
+        published: 8081
         protocol: tcp
         mode: host
     deploy:
-      replicas: 3
       placement:
-        max_replicas_per_node: 1
         constraints:
-          - node.labels.deploy_cockroachdb==true
+          - node.Hostname == noether
+    restart: always
+
+  roach-boxer:
+    image: cockroachdb/cockroach
+    volumes:
+      - data:/storage
+    command:
+      - 'start'
+      - '--listen-addr=:26257'
+      - '--advertise-addr=boxer.shill.gq'
+      - '--certs-dir=/run/secrets'
+      - '--store=/storage'
+      - '--join=noether.shill.gq'
+      - '--join=k0node1.shill.gq'
+      - '--external-io-disable-http'
+      - '--external-io-disable-implicit-credentials'
+    secrets:
+      - source: cockroach_boxer.shill.gq_cert
+        target: node.crt
+        mode: 0400
+      - source: cockroach_boxer.shill.gq_key
+        target: node.key
+        mode: 0400
+      - source: cockroachdb_ca_cert
+        target: ca.crt
+        mode: 0444
+    networks:
+      - bridge
+    ports:
+      - target: 26257
+        published: 26257
+        protocol: tcp
+        mode: host
+      - target: 8080
+        published: 8081
+        protocol: tcp
+        mode: host
+    deploy:
+      placement:
+        constraints:
+          - node.Hostname == boxer
+    restart: always
+
+  roach-k0node1:
+#    image: cockroachdb/cockroach
+
+#
+# The official image is built only for x86_64
+#
+    image: christoofar/cockroachdb-arm64
+    volumes:
+      - data:/storage
+    command:
+      - 'start'
+      - '--listen-addr=:26257'
+      - '--advertise-addr=k0node1.shill.gq'
+      - '--certs-dir=/run/secrets'
+      - '--store=/storage'
+      - '--join=noether.shill.gq'
+      - '--join=boxer.shill.gq'
+      - '--external-io-disable-http'
+      - '--external-io-disable-implicit-credentials'
+    secrets:
+      - source: cockroach_k0node1.shill.gq_cert
+        target: node.crt
+        mode: 0400
+      - source: cockroach_k0node1.shill.gq_key
+        target: node.key
+        mode: 0400
+      - source: cockroachdb_ca_cert
+        target: ca.crt
+        mode: 0444
+    networks:
+      - bridge
+    ports:
+      - target: 26257
+        published: 26257
+        protocol: tcp
+        mode: host
+      - target: 8080
+        published: 8081
+        protocol: tcp
+        mode: host
+    deploy:
+      placement:
+        constraints:
+          - node.Hostname == k0node1
     restart: always
 
 volumes:
   data:
 
+secrets:
+  cockroach_boxer.shill.gq_cert:
+    external: true
+  cockroach_boxer.shill.gq_key:
+    external: true
+  cockroach_k0node1.shill.gq_cert:
+    external: true
+  cockroach_k0node1.shill.gq_key:
+    external: true
+  cockroach_noether.shill.gq_cert:
+    external: true
+  cockroach_noether.shill.gq_key:
+    external: true
+  cockroachdb_ca_cert:
+    external: true
+
 networks:
-  roachnet:
-    internal: true
+  bridge:
+    external: true
 
