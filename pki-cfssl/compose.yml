@@ -1,0 +1,33 @@
+---
+version: '3.5'
+
+services:
+  cfssl:
+    image: cfssl/cfssl
+    entrypoint: cfssl serve
+    command:
+      - '--address=0.0.0.0'
+      - '-config=/config.json'
+      - '-ca=/run/secrets/ca.crt'
+      - '-ca-key=/run/secrets/ca.key'
+    ports:
+      - 8888:8888
+    configs:
+      - source: cfssl_config
+        target: /config.json
+    secrets:
+      - source: cfssl_ca_certificate
+        target: ca.crt
+      - source: cfssl_ca_private_key
+        target: ca.key
+        mode: 0400
+
+configs:
+  cfssl_config:
+    external: true
+
+secrets:
+  cfssl_ca_certificate:
+    external: true
+  cfssl_ca_private_key:
+    external: true
