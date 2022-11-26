@@ -3,7 +3,8 @@ version: '3.8'
 
 services:
   roach-noether:
-    image: cockroachdb/cockroach
+    # Update to release cockroach when ARM64 will be qualified for production
+    image: cockroachdb/cockroach-unstable
     volumes:
       - data:/storage
     command:
@@ -44,7 +45,8 @@ services:
     restart: always
 
   roach-boxer:
-    image: cockroachdb/cockroach
+    # Update to release cockroach when ARM64 will be qualified for production
+    image: cockroachdb/cockroach-unstable
     volumes:
       - data:/storage
     command:
@@ -85,12 +87,8 @@ services:
     restart: always
 
   roach-k0node1:
-#    image: cockroachdb/cockroach
-
-#
-# The official image is built only for x86_64
-#
-    image: christoofar/cockroachdb-arm64
+    # Update to release cockroach when ARM64 will be qualified for production
+    image: cockroachdb/cockroach-unstable
     volumes:
       - data:/storage
     command:
