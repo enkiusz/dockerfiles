@@ -124,6 +124,8 @@ services:
         target: /etc/prometheus.d/victoriametrics.yml
       - source: infra_scrape_config
         target: /etc/prometheus.d/infra.yml
+      - source: swarm_nodes_scrape_config
+        target: /etc/prometheus.d/swarm.yml
     ports:
       - 8429:8429
     command:
@@ -193,15 +195,19 @@ services:
 configs:
   vmagent_prometheus:
     name: vmagent_prometheus-${EPOCH}
-    file: ./vmagent-prometheus.yml
+    file: vmagent-prometheus.yml
   victoriametrics_scrape_config:
     name: victoriametrics_scrape_config-${EPOCH}
-    file: ./victoriametrics_scrape_config.yml
+    file: victoriametrics_scrape_config.yml
   infra_scrape_config:
-    external: true
+    name: infra_scrape_config-${EPOCH}
+    file: infra_scrape_config.yml
+  swarm_nodes_scrape_config:
+    name: swarm_nodes_scrape_config-${EPOCH}
+    file: swarm_nodes_scrape_config.yml
   grafana_datasources:
     name: grafana_datasources-${EPOCH}
-    file: ./grafana/datasource.yml
+    file: grafana/datasource.yml
   grafana_vm_dashboard:
     name: grafana_vm_dashboard-${EPOCH}
     file: dashboards/victoriametrics.json
