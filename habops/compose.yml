@@ -12,8 +12,6 @@ services:
       mqtt:
         aliases:
           - mqtt
-    expose:
-      - "1883"
     ports:
       - "1883:1883"
       - "8883:8883"
