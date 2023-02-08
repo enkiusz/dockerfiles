@@ -101,6 +101,8 @@ services:
       - '--join=boxer.shill.gq'
       - '--external-io-disable-http'
       - '--external-io-disable-implicit-credentials'
+# Reduce cache size to stop oomkiller
+      - '--cache=32M'
     secrets:
       - source: cockroach_k0node1.shill.gq_cert
         target: node.crt
