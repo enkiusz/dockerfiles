@@ -6,7 +6,7 @@ version: '3.5'
 
 services:
 
-  vmstorage-1:
+  vmstorage-boxer:
     image: victoriametrics/vmstorage
     volumes:
       - strgdata:/storage
@@ -14,14 +14,14 @@ services:
       - '--storageDataPath=/storage'
       - '--retentionPeriod=9999y'
     networks:
-      - vminsert
+      - vminternal
     deploy:
       placement:
         constraints:
           - node.Hostname==boxer
     restart: always
 
-  vmstorage-2:
+  vmstorage-k0node1:
     image: victoriametrics/vmstorage
     volumes:
       - strgdata:/storage
@@ -29,22 +29,7 @@ services:
       - '--storageDataPath=/storage'
       - '--retentionPeriod=9999y'
     networks:
-      - vminsert
-    deploy:
-      placement:
-        constraints:
-          - node.Hostname==gauss
-    restart: always
-
-  vmstorage-3:
-    image: victoriametrics/vmstorage
-    volumes:
-      - strgdata:/storage
-    command:
-      - '--storageDataPath=/storage'
-      - '--retentionPeriod=9999y'
-    networks:
-      - vminsert
+      - vminternal
     deploy:
       placement:
         constraints:
@@ -59,7 +44,7 @@ services:
       - '--storageDataPath=/storage'
       - '--retentionPeriod=9999y'
     networks:
-      - vminsert
+      - vminternal
     deploy:
       placement:
         constraints:
@@ -69,39 +54,33 @@ services:
   vminsert:
     image: victoriametrics/vminsert
     depends_on:
-      - vmstorage-1
-      - vmstorage-2
-      - vmstorage-3
+      - vmstorage-boxer
+      - vmstorage-k0node1
       - vmstorage-noether
     command:
       - '--replicationFactor=2'
-      - '--storageNode=vmstorage-1:8400'
-      - '--storageNode=vmstorage-2:8400'
-      - '--storageNode=vmstorage-3:8400'
+      - '--storageNode=vmstorage-boxer:8400'
+      - '--storageNode=vmstorage-k0node1:8400'
       - '--storageNode=vmstorage-noether:8400'
       - '-influxSkipSingleField'
     networks:
-      - vminsert
-    ports:
-      - 8480:8480
+      - vminternal
     restart: always
 
   vmselect:
     image: victoriametrics/vmselect
     depends_on:
-      - vmstorage-1
-      - vmstorage-2
-      - vmstorage-3
+      - vmstorage-boxer
+      - vmstorage-k0node1
+      - vmstorage-noether
     command:
       - '--replicationFactor=2'
-      - '--storageNode=vmstorage-1:8401'
-      - '--storageNode=vmstorage-2:8401'
-      - '--storageNode=vmstorage-3:8401'
+      - '--storageNode=vmstorage-boxer:8401'
+      - '--storageNode=vmstorage-k0node1:8401'
       - '--storageNode=vmstorage-noether:8401'
       - '-dedup.minScrapeInterval=1ms'
     networks:
-      - vminsert
-      - vmselect
+      - vminternal
     ports:
       - 8481:8481
     restart: always
@@ -112,8 +91,7 @@ services:
       - vminsert
       - vmselect
     networks:
-      - vminsert
-      - vmselect
+      - vminternal
       - bridge
     volumes:
       - vmagentdata:/vmagentdata
@@ -126,53 +104,50 @@ services:
         target: /etc/prometheus.d/infra.yml
       - source: swarm_nodes_scrape_config
         target: /etc/prometheus.d/swarm.yml
-    ports:
-      - 8429:8429
     command:
       - '--promscrape.config=/etc/prometheus/prometheus.yml'
       - '--remoteWrite.url=http://vminsert:8480/insert/0/prometheus/'
     restart: always
 
-  vmalert:
-    image: victoriametrics/vmalert
-    depends_on:
-      - vmselect
-      - vminsert
-    networks:
-      - vmselect
-      - vminsert
-    configs:
-      - source: vmalert_alerts
-        target: /etc/alerts/alerts.yml
-    command:
-      - '--datasource.url=http://vmselect:8481/select/0/prometheus'
-      - '--remoteRead.url=http://vmselect:8481/select/0/prometheus'
-      - '--remoteWrite.url=http://vminsert:8480/insert/0/prometheus'
-      - '--notifier.url=http://alertmanager:9093/'
-      - '--rule=/etc/alerts/*.yml'
-      # display source of alerts in grafana
-      - '-external.url=http://victoriametrics.shill.gq:3000' #grafana outside container
-      # when copypaste the line below be aware of '$$' for escaping in '$expr'
-      - '--external.alert.source=explore?orgId=1&left=["now-1h","now","VictoriaMetrics",{"expr":"{{$$expr|quotesEscape|crlfEscape|queryEscape}}"},{"mode":"Metrics"},{"ui":[true,true,true,"none"]}]'
-    restart: always
+#  vmalert:
+#    image: victoriametrics/vmalert
+#    depends_on:
+#      - vmselect
+#      - vminsert
+#    networks:
+#      - vminternal
+#    configs:
+#      - source: vmalert_alerts
+#        target: /etc/alerts/alerts.yml
+#    command:
+#      - '--datasource.url=http://vmselect:8481/select/0/prometheus'
+#      - '--remoteRead.url=http://vmselect:8481/select/0/prometheus'
+#      - '--remoteWrite.url=http://vminsert:8480/insert/0/prometheus'
+#      - '--notifier.url=http://alertmanager:9093/'
+#      - '--rule=/etc/alerts/*.yml'
+#      # display source of alerts in grafana
+#      - '-external.url=http://victoriametrics.shill.gq:3000' #grafana outside container
+#      # when copypaste the line below be aware of '$$' for escaping in '$expr'
+#      - '--external.alert.source=explore?orgId=1&left=["now-1h","now","VictoriaMetrics",{"expr":"{{$$expr|quotesEscape|crlfEscape|queryEscape}}"},{"mode":"Metrics"},{"ui":[true,true,true,"none"]}]'
+#    restart: always
 
-  alertmanager:
-    image:  prom/alertmanager
-    configs:
-      - source: alertmanager
-        target: /config/alertmanager.yml
-    command:
-      - '--config.file=/config/alertmanager.yml'
-    ports:
-      - 9093:9093
-    restart: always
+#  alertmanager:
+#    image:  prom/alertmanager
+#    configs:
+#      - source: alertmanager
+#        target: /config/alertmanager.yml
+#    command:
+#      - '--config.file=/config/alertmanager.yml'
+#    ports:
+#      - 9093:9093
+#    restart: always
 
   grafana:
     image: grafana/grafana
     depends_on:
       - vmselect
     networks:
-      - vmselect
+      - vminternal
     ports:
       - 3000:3000
     volumes:
@@ -180,12 +155,12 @@ services:
     configs:
       - source: grafana_datasources
         target: /etc/grafana/provisioning/datasources/datasource.yml
-      - source: grafana_vm_dashboard
-        target: /var/lib/grafana/dashboards/vm.json
-      - source: grafana_vmagent_dashboard
-        target: /var/lib/grafana/dashboards/vmagent.json
-      - source: grafana_vmalert_dashboard
-        target: /var/lib/grafana/dashboards/vmalert.json
+#      - source: grafana_vm_dashboard
+#        target: /var/lib/grafana/dashboards/vm.json
+#      - source: grafana_vmagent_dashboard
+#        target: /var/lib/grafana/dashboards/vmagent.json
+#      - source: grafana_vmalert_dashboard
+#        target: /var/lib/grafana/dashboards/vmalert.json
     deploy:
       placement:
         constraints:
@@ -217,12 +192,12 @@ configs:
   grafana_vmalert_dashboard:
     name: grafana_vmalert_dashboard-${EPOCH}
     file: dashboards/vmalert.json
-  vmalert_alerts:
-    name: vmalert_alerts-${EPOCH}
-    file: alerts.yml
-  alertmanager:
-    name: alertmanager-${EPOCH}
-    file: alertmanager.yml
+#  vmalert_alerts:
+#    name: vmalert_alerts-${EPOCH}
+#    file: alerts.yml
+#  alertmanager:
+#    name: alertmanager-${EPOCH}
+#    file: alertmanager.yml
 
 volumes:
   strgdata:
@@ -230,9 +205,7 @@ volumes:
   vmagentdata:
 
 networks:
-  vminsert:
-    internal: true
-  vmselect:
+  vminternal:
     internal: true
   bridge:
     external: true
