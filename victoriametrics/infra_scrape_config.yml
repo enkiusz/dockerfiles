@@ -1,7 +1,7 @@
   - job_name: 'network_infrastructure'
     static_configs:
       - targets:
-        - rtr-core1.shill.gq:9100
+        - banach.shill.gq:9100
     metric_relabel_configs:
       - action: drop_metrics
         regex:
