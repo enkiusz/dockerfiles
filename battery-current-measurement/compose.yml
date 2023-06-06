@@ -12,7 +12,6 @@ services:
     devices:
       - /dev/ttyUSB0
       - /dev/ttyUSB1
-      - /dev/ttyUSB2
       - /dev/ttyACM0
 
     environment:
