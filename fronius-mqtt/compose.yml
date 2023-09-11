@@ -1,0 +1,19 @@
+version: "3.5"
+
+services:
+  fronius-mqtt:
+    image: enkiusz/fronius-mqtt:latest
+    deploy:
+      replicas: 1
+    environment:
+      DATAMANAGER_URL: http://pv.shill.gq
+      BROKER_URL: mqtt://mqtt
+    networks:
+      - mqtt
+      - bridge
+
+networks:
+  mqtt:
+    internal: true
+  bridge:
+    external: true
