@@ -1,0 +1,14 @@
+  - job_name: 'victoriametrics'
+    static_configs:
+      - targets:
+        - vmnode:8428
+    metric_relabel_configs:
+      - action: drop_metrics
+        regex:
+          - flag
+          - 'go_.+'
+          - '.+_bucket$'
+          - '.*promscrape_.+'
+          - 'vm_log_messages_.+'
+          - 'vm_per_query_.+'
+          - '.+_request_duration_.+'
