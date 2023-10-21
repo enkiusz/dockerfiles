@@ -52,7 +52,7 @@ services:
     image: victoriametrics/vmbackup
     volumes:
       - /pool/data/victoriametrics:/victoria-metrics-data
-      - /pool/data/backups/victoriametrics:/mnt/backups
+      - /pool/backups/victoriametrics:/mnt/backups
     networks:
       - internal
 
