@@ -48,6 +48,14 @@ services:
     networks:
       - internal
 
+  vmbackup:
+    image: victoriametrics/vmbackup
+    volumes:
+      - /pool/data/victoriametrics:/victoria-metrics-data
+      - /pool/data/backups/victoriametrics:/mnt/backups
+    networks:
+      - internal
+
   grafana:
     image: grafana/grafana
     depends_on:
