@@ -1,5 +1,4 @@
 #!/bin/sh
 
 export EPOCH=$(date '+%s')
-docker stack deploy --prune -c compose.yml vm
-
+docker stack deploy -c compose.yml vm "$@"
