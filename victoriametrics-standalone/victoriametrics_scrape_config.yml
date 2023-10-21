@@ -11,4 +11,4 @@
           - '.*promscrape_.+'
           - 'vm_log_messages_.+'
           - 'vm_per_query_.+'
-          - '.+_request_duration_.+'
+          # - '.+_request_duration_.+'
