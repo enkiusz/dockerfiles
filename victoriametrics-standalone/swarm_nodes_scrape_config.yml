@@ -2,7 +2,7 @@
     static_configs:
       - targets:
         - noether.shill.gq:9100
-        - boxer.shill.gq:9100
+        # - boxer.shill.gq:9100
         - watt.shill.gq:9100
         - davinci.shill.gq:9100
     metric_relabel_configs:
