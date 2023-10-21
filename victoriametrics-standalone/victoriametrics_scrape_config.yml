@@ -9,6 +9,6 @@
           - 'go_.+'
           - '.+_bucket$'
           - '.*promscrape_.+'
-          - 'vm_log_messages_.+'
-          - 'vm_per_query_.+'
+          # - 'vm_log_messages_.+'
+          # - 'vm_per_query_.+'
           # - '.+_request_duration_.+'
