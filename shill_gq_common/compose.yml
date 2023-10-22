@@ -12,27 +12,13 @@ services:
       mqtt:
         aliases:
           - mqtt
-    expose:
-      - "1883"
     ports:
       - "1883:1883"
       - "8883:8883"
 
-  fronius-mqtt:
-    image: enkiusz/fronius-mqtt:latest
-    deploy:
-      replicas: 1
-    environment:
-      DATAMANAGER_URL: http://pv.shill.gq
-      BROKER_URL: mqtt://mqtt
-    networks:
-      - mqtt
-      - bridge
-    depends_on:
-      - mosquitto
-
 configs:
   mosquitto_config:
+    name: mosquitto_config-${EPOCH}
     file: conf/mosquitto.conf
 
 networks:

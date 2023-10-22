@@ -1,0 +1,11 @@
+  - job_name: 'swarm_c0prod'
+    static_configs:
+      - targets:
+        - boxer.shill.gq:9100
+        - noether.shill.gq:9100
+        - k0node1.shill.gq:9100
+        - watt.shill.gq:9100
+    metric_relabel_configs:
+      - action: drop_metrics
+        regex:
+          - 'go_.+'

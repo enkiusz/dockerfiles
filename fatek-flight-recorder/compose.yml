@@ -10,9 +10,9 @@ services:
     devices:
       - /dev/ttyUSB0
       - /dev/ttyUSB1
-      - /dev/ttyUSB2
       - /dev/ttyACM0
 
     environment:
       BROKER_URL: mqtt://mqtt
-      PYSERIAL_DEVICE: SER=FTGS6NLO
+      PYSERIAL_DEVICE: hwgrep://SER=FTGS6NLO
+      SETTABLE_INPUTS: --settable-input X7 --settable-input X8

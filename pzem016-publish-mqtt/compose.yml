@@ -11,6 +11,7 @@ services:
     # what is what based on the serial number
     devices:
       - /dev/ttyUSB0
+      - /dev/ttyUSB1
       - /dev/ttyACM0
 
     environment:

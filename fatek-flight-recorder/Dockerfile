@@ -10,7 +10,9 @@ RUN wget -O /fatek-flight-recorder.py https://raw.githubusercontent.com/mgrela/t
 
 ARG pyserial_device
 ARG broker_url
+ARG settable_inputs
 ENV PYSERIAL_DEVICE=$pyserial_device
 ENV BROKER_URL=$broker_url
+ENV SETTABLE_INPUTS=$settable_inputs
 
-ENTRYPOINT python3 /fatek-flight-recorder.py -p $PYSERIAL_DEVICE --mqtt-broker $BROKER_URL
+ENTRYPOINT python3 /fatek-flight-recorder.py -p $PYSERIAL_DEVICE --mqtt-broker $BROKER_URL $SETTABLE_INPUTS

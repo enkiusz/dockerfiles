@@ -1,0 +1,106 @@
+---
+version: '3.5'
+
+services:
+
+  vmnode:
+    image: victoriametrics/victoria-metrics
+    volumes:
+      - /pool/data/victoriametrics:/victoria-metrics-data
+    command:
+      - '--retentionPeriod=9999y'
+      - '-influxSkipSingleField'
+    networks:
+      - internal
+
+  vmagent:
+    image: victoriametrics/vmagent
+    depends_on:
+      - vmnode
+    networks:
+      - internal
+      - bridge
+    volumes:
+      - vmagentdata:/vmagentdata
+    configs:
+      - source: vmagent_prometheus_config
+        target: /etc/prometheus/prometheus.yml
+      - source: victoriametrics_scrape_config
+        target: /etc/prometheus.d/victoriametrics.yml
+      - source: infra_scrape_config
+        target: /etc/prometheus.d/infra.yml
+      - source: swarm_nodes_scrape_config
+        target: /etc/prometheus.d/swarm.yml
+    command:
+      - '--promscrape.config=/etc/prometheus/prometheus.yml'
+      - '--remoteWrite.url=http://vmnode:8428/api/v1/write'
+
+  vmauth:
+    image: victoriametrics/vmauth
+    depends_on:
+      - vmnode
+    command:
+      - '-auth.config=/run/secrets/vmauth_config'
+    secrets:
+      - vmauth_config
+    ports:
+      - "8427:8427"
+    networks:
+      - internal
+
+  grafana:
+    image: grafana/grafana
+    depends_on:
+      - vmnode
+    networks:
+      - internal
+      - bridge
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafanadata:/var/lib/grafana
+    configs:
+      - source: grafana_datasources
+        target: /etc/grafana/provisioning/datasources/datasource.yml
+      - source: grafana_local_dashboards
+        target: /etc/grafana/provisioning/dashboards/local.yml
+      - source: grafana_victoriametrics_dashboard
+        target: /var/lib/grafana/dashboards/victoriametrics.json
+
+volumes:
+  vmagentdata:
+  grafanadata:
+
+configs:
+  vmagent_prometheus_config:
+    name: vmagent_prometheus-${EPOCH}
+    file: vmagent-prometheus.yml
+  victoriametrics_scrape_config:
+    name: victoriametrics_scrape_config-${EPOCH}
+    file: victoriametrics_scrape_config.yml
+  infra_scrape_config:
+    name: infra_scrape_config-${EPOCH}
+    file: infra_scrape_config.yml
+  swarm_nodes_scrape_config:
+    name: swarm_nodes_scrape_config-${EPOCH}
+    file: swarm_nodes_scrape_config.yml
+  grafana_datasources:
+    name: grafana_datasources-${EPOCH}
+    file: grafana/datasource.yml
+  grafana_local_dashboards:
+    name: grafana_local_dashboards-${EPOCH}
+    file: grafana/local.yml
+  grafana_victoriametrics_dashboard:
+    name: grafana_vm_dashboard-${EPOCH}
+    file: dashboards/victoriametrics.json
+
+secrets:
+  vmauth_config:
+    external: true
+
+networks:
+  internal:
+    attachable: true
+    internal: true
+  bridge:
+    external: true
