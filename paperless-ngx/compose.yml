@@ -1,0 +1,60 @@
+version: "3.4"
+services:
+  paperless-broker:
+    image: docker.io/library/redis:7
+    restart: unless-stopped
+    volumes:
+      - paperless_redisdata:/data
+
+  paperless-webserver:
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    restart: unless-stopped
+    depends_on:
+      - postgresql
+      - paperless-broker
+      - paperless-gotenberg
+      - paperless-tika
+    ports:
+      - "8000:8000"
+    secrets:
+      - paperless_postgres-password
+      - paperless_secret-key
+    volumes:
+      - /pool/data/paperless/data:/usr/src/paperless/data
+      - /pool/data/paperless/media:/usr/src/paperless/media
+      - /pool/data/paperless/export:/usr/src/paperless/export
+      - /pool/data/paperless/consume:/usr/src/paperless/consume
+    environment:
+      PAPERLESS_REDIS: redis://paperless-broker:6379
+      PAPERLESS_DBHOST: postgresql
+      PAPERLESS_DBPASS_FILE: /run/secrets/paperless_postgres-password
+      PAPERLESS_SECRET_KEY_FILE: /run/secrets/paperless_secret-key
+      PAPERLESS_TIKA_ENABLED: 1
+      PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://paperless-gotenberg:3000
+      PAPERLESS_TIKA_ENDPOINT: http://paperless-tika:9998
+      PAPERLESS_OCR_LANGUAGE: pol
+      PAPERLESS_OCR_LANGUAGES: pol
+
+  paperless-gotenberg:
+    image: docker.io/gotenberg/gotenberg:7.10
+    restart: unless-stopped
+
+    # The gotenberg chromium route is used to convert .eml files. We do not
+    # want to allow external content like tracking pixels or even javascript.
+    command:
+      - gotenberg
+      - --chromium-disable-javascript=true
+      - --chromium-allow-list=file:///tmp/.*
+
+  paperless-tika:
+    image: ghcr.io/paperless-ngx/tika:latest
+    restart: unless-stopped
+
+secrets:
+  paperless_postgres-password:
+    external: true
+  paperless_secret-key:
+    external: true
+
+volumes:
+  paperless_redisdata:
