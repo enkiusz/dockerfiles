@@ -1,0 +1,3 @@
+deb     http://ftp.de.debian.org/debian/    trixie main contrib non-free non-free-firmware
+deb-src http://ftp.de.debian.org/debian/    trixie main contrib non-free non-free-firmware
+#deb     http://security.debian.org/         main contrib non-free non-free-firmware
