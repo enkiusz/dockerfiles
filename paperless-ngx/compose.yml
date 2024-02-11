@@ -8,7 +8,7 @@ services:
 
   paperless-webserver:
 #    image: ghcr.io/paperless-ngx/paperless-ngx:latest
-    image: paperless-ngx-webserver:latest-custom
+    image: enkiusz/paperless-ngx-webserver:latest-custom
     restart: unless-stopped
     depends_on:
       - postgresql
@@ -38,6 +38,7 @@ services:
       PAPERLESS_OCR_LANGUAGES: pol
       PAPERLESS_CONSUMER_RECURSIVE: "true"
       PAPERLESS_TASK_WORKERS: 4
+      PAPERLESS_CONSUMER_SUBDIRS_AS_TAGS: "true"
 
   paperless-gotenberg:
     image: docker.io/gotenberg/gotenberg:7.10

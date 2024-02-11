@@ -1,1 +1,1 @@
-docker build -t paperless-ngx-webserver:latest-custom webserver
+docker build --push -t enkiusz/paperless-ngx-webserver:latest-custom webserver
