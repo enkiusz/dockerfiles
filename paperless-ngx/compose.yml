@@ -7,8 +7,7 @@ services:
       - paperless_redisdata:/data
 
   paperless-webserver:
-#    image: ghcr.io/paperless-ngx/paperless-ngx:latest
-    image: enkiusz/paperless-ngx-webserver:latest-custom
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
     restart: unless-stopped
     depends_on:
       - postgresql
@@ -33,7 +32,6 @@ services:
       PAPERLESS_TIKA_ENABLED: 1
       PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://paperless-gotenberg:3000
       PAPERLESS_TIKA_ENDPOINT: http://paperless-tika:9998
-      PAPERLESS_PRE_CONSUME_SCRIPT: /usr/local/bin/fix-orientation.sh
       PAPERLESS_OCR_LANGUAGE: pol
       PAPERLESS_OCR_LANGUAGES: pol
       PAPERLESS_CONSUMER_RECURSIVE: "true"
