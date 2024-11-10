@@ -1,0 +1,29 @@
+---
+services:
+  netbootxyz:
+    image: netbootxyz/netbootxyz
+
+    # Without running in privileged mode dnsmasq cannot send back TFTP responses:
+    #
+    # err dnsmasq[18]: failed to send packet: Operation not permitted
+    #
+    privileged: true
+
+    environment:
+      - NGINX_PORT=80
+      - WEB_APP_PORT=3000
+    volumes:
+      - /pool/data/netboot.xyz/assets:/assets
+      - /pool/data/netboot.xyz/config:/config
+    network_mode: host
+    ports:
+      - published: 3001
+        target: 3000
+        protocol: tcp
+      - published: 69
+        target: 69
+        protocol: udp
+      - published: 8080
+        target: 80
+        protocol: tcp
+    restart: unless-stopped
