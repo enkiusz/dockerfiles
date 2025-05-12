@@ -1,13 +1,13 @@
 version: "3.4"
 services:
   paperless-broker:
-    image: docker.io/library/redis:7
+    image: docker.io/library/redis:8
     restart: unless-stopped
     volumes:
       - paperless_redisdata:/data
 
   paperless-webserver:
-    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    image: ghcr.io/paperless-ngx/paperless-ngx:2.15.3
     restart: unless-stopped
     depends_on:
       - postgresql
@@ -39,12 +39,13 @@ services:
       PAPERLESS_CONSUMER_SUBDIRS_AS_TAGS: "true"
       PAPERLESS_CONSUMER_ENABLE_BARCODES: "true"
       PAPERLESS_CONSUMER_BARCODE_SCANNER: "ZXING"
+      PAPERLESS_CONSUMER_BARCODE_TIFF_SUPPORT: "true"
       PAPERLESS_CONSUMER_ENABLE_ASN_BARCODE: "true"
       PAPERLESS_CONSUMER_ASN_BARCODE_PREFIX: "ASN~"
       PAPERLESS_CONSUMER_ENABLE_TAG_BARCODE: "true"
 
   paperless-gotenberg:
-    image: docker.io/gotenberg/gotenberg:7.10
+    image: docker.io/gotenberg/gotenberg:8.20
     restart: unless-stopped
 
     # The gotenberg chromium route is used to convert .eml files. We do not
