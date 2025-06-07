@@ -1,0 +1,8 @@
+  - job_name: 'swarm_c0prod'
+    static_configs:
+      - targets:
+        - megatron.shill.gq:9100
+    metric_relabel_configs:
+      - action: drop_metrics
+        regex:
+          - 'go_.+'

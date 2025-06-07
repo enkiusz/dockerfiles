@@ -4,17 +4,17 @@ version: '3.5'
 services:
 
   vmnode:
-    image: victoriametrics/victoria-metrics
+    image: victoriametrics/victoria-metrics:v1.117.1
     volumes:
       - /pool/data/victoriametrics:/victoria-metrics-data
     command:
-      - '--retentionPeriod=9999y'
+      - '--retentionPeriod=100y'
       - '-influxSkipSingleField'
     networks:
       - internal
 
   vmagent:
-    image: victoriametrics/vmagent
+    image: victoriametrics/vmagent:v1.117.1
     depends_on:
       - vmnode
     networks:
@@ -29,14 +29,14 @@ services:
         target: /etc/prometheus.d/victoriametrics.yml
       - source: infra_scrape_config
         target: /etc/prometheus.d/infra.yml
-      - source: swarm_nodes_scrape_config
-        target: /etc/prometheus.d/swarm.yml
+      - source: wk_nodes_scrape_config
+        target: /etc/prometheus.d/wk.yml
     command:
       - '--promscrape.config=/etc/prometheus/prometheus.yml'
       - '--remoteWrite.url=http://vmnode:8428/api/v1/write'
 
   vmauth:
-    image: victoriametrics/vmauth
+    image: victoriametrics/vmauth:v1.117.1
     depends_on:
       - vmnode
     command:
@@ -84,6 +84,9 @@ configs:
   swarm_nodes_scrape_config:
     name: swarm_nodes_scrape_config-${EPOCH}
     file: swarm_nodes_scrape_config.yml
+  wk_nodes_scrape_config:
+    name: wk_nodes_scrape_config-${EPOCH}
+    file: wk_nodes_scrape_config.yml
   grafana_datasources:
     name: grafana_datasources-${EPOCH}
     file: grafana/datasource.yml
