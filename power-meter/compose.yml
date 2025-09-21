@@ -7,11 +7,7 @@ services:
     container_name: power-meter
     network_mode: bridge
 
-    # Share all serial ports with the container and let pyserial figure out
-    # what is what based on the serial number
     devices:
-      - /dev/ttyUSB0
-      - /dev/ttyUSB1
       - /dev/ttyACM0
 
     environment:
