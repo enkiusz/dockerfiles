@@ -6,6 +6,7 @@ services:
     image: enkiusz/power-meter
     container_name: power-meter
     network_mode: bridge
+    restart: always
 
     devices:
       - /dev/ttyACM0

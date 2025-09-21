@@ -6,6 +6,7 @@ services:
     image: enkiusz/sdm-modbus-mqtt
     container_name: sdm-modbus-mqtt
     network_mode: bridge
+    restart: always
 
     devices:
       - /dev/ttyUSB0
