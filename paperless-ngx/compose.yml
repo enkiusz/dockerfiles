@@ -5,9 +5,14 @@ services:
     restart: unless-stopped
     volumes:
       - paperless_redisdata:/data
+    deploy:
+      placement:
+        constraints:
+          - 'node.hostname == noether'
 
   paperless-webserver:
-    image: ghcr.io/paperless-ngx/paperless-ngx:2.15.3
+#    image: ghcr.io/paperless-ngx/paperless-ngx:2.15.3
+    image: paperless-ngx:v2.16.2-png-barcodes
     restart: unless-stopped
     depends_on:
       - postgresql
@@ -43,6 +48,10 @@ services:
       PAPERLESS_CONSUMER_ENABLE_ASN_BARCODE: "true"
       PAPERLESS_CONSUMER_ASN_BARCODE_PREFIX: "ASN~"
       PAPERLESS_CONSUMER_ENABLE_TAG_BARCODE: "true"
+    deploy:
+      placement:
+        constraints:
+          - 'node.hostname == noether'
 
   paperless-gotenberg:
     image: docker.io/gotenberg/gotenberg:8.20
@@ -54,10 +63,18 @@ services:
       - gotenberg
       - --chromium-disable-javascript=true
       - --chromium-allow-list=file:///tmp/.*
+    deploy:
+      placement:
+        constraints:
+          - 'node.hostname == noether'
 
   paperless-tika:
     image: ghcr.io/paperless-ngx/tika:latest
     restart: unless-stopped
+    deploy:
+      placement:
+        constraints:
+          - 'node.hostname == noether'
 
 secrets:
   paperless_postgres-password:
