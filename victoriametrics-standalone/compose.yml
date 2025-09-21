@@ -12,6 +12,10 @@ services:
       - '-influxSkipSingleField'
     networks:
       - internal
+    deploy:
+      placement:
+        constraints:
+          - 'node.hostname == noether'
 
   vmagent:
     image: victoriametrics/vmagent:v1.117.1
@@ -27,6 +31,8 @@ services:
         target: /etc/prometheus/prometheus.yml
       - source: victoriametrics_scrape_config
         target: /etc/prometheus.d/victoriametrics.yml
+      - source: swarm_nodes_scrape_config
+        target: /etc/prometheus.d/swarm.yml
       - source: infra_scrape_config
         target: /etc/prometheus.d/infra.yml
       - source: wk_nodes_scrape_config
@@ -34,6 +40,10 @@ services:
     command:
       - '--promscrape.config=/etc/prometheus/prometheus.yml'
       - '--remoteWrite.url=http://vmnode:8428/api/v1/write'
+    deploy:
+      placement:
+        constraints:
+          - 'node.hostname == noether'
 
   vmauth:
     image: victoriametrics/vmauth:v1.117.1
@@ -47,6 +57,10 @@ services:
       - "8427:8427"
     networks:
       - internal
+    deploy:
+      placement:
+        constraints:
+          - 'node.hostname == noether'
 
   grafana:
     image: grafana/grafana
@@ -55,6 +69,10 @@ services:
     networks:
       - internal
       - bridge
+    deploy:
+      placement:
+        constraints:
+          - 'node.hostname == noether'
     ports:
       - "3000:3000"
     volumes:

@@ -3,8 +3,9 @@
       - targets:
         - noether.shill.gq:9100
         # - boxer.shill.gq:9100
-        - watt.shill.gq:9100
-        - davinci.shill.gq:9100
+        # - watt.shill.gq:9100
+        # - davinci.shill.gq:9100
+        - harry.shill.gq:9100
     metric_relabel_configs:
       - action: drop_metrics
         regex:
