@@ -15,6 +15,10 @@ services:
     ports:
       - "1883:1883"
       - "8883:8883"
+    deploy:
+      placement:
+        constraints:
+          - 'node.hostname == noether'
 
 configs:
   mosquitto_config:
